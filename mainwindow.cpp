@@ -1,6 +1,8 @@
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QSqlQueryModel>
+#include <QSqlRecord>
 
 #include <QMessageBox>
 
@@ -38,37 +40,19 @@ void MainWindow::connectDb(){
         nodb.setText("Database could not be established");
         nodb.setStandardButtons(QMessageBox::Ok);
     }
+    users_ = new QSqlQueryModel;
+    users_->setQuery("SELECT username FROM users");
+    mutualAccounts_ = new QSqlQueryModel;
+    mutualAccounts_->setQuery("SELECT name, id FROM mutualfunds");
+
+    accounts_ = new QSqlQueryModel;
+    accounts_->setQuery("SELECT name, id FROM accounts");
 }
 
 void MainWindow::setupUi(){
 
-    QSqlQuery query;
-    query.exec("SELECT username FROM users");
-    while(query.next()){
-        userList_ << query.value(0).toString();
-    }
-    users_ = new QStringListModel(userList_, this);
     ui->UserView->setModel(users_);
-
-    // Setup Mutual Account List
-    mutualAccountList_ << "Complete Index"
-                       << "Riskier Investments";
-    mutualAccounts_ = new QStringListModel(mutualAccountList_, this);
     ui->MutualView->setModel(mutualAccounts_);
 
-    // Setup Account List
-    for( int i = 0; i < 5; ++i ){
-        QStringList list;
-        list << "S&P " + QString::number(i)
-             << "DJ " + QString::number(i)
-             << "Low Risk " + QString::number(i);
-        accounts_.append(new QStringListModel(list, this));
-    }
-    ui->AccountsView->setModel(accounts_.at(0));
-
-    connect(ui->MutualView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::updateAccountModel );
-}
-
-void MainWindow::updateAccountModel(const QModelIndex &current, const QModelIndex &previous){
-    ui->AccountsView->setModel(accounts_.at(current.row()));
+    ui->AccountsView->setModel(accounts_);
 }

@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSqlQueryModel>
+#include <QSqlTableModel>
+
 #include <QStringListModel>
 
 QT_BEGIN_NAMESPACE
@@ -21,16 +24,9 @@ private:
     void connectDb();
 
     Ui::MainWindow *ui;
-    QStringListModel *users_;
-    QStringListModel *mutualAccounts_;
-    QList<QStringListModel *> accounts_;
-
-    QStringList userList_;
-    QStringList accountList_;
-    QStringList mutualAccountList_;
-
-private slots:
-    void updateAccountModel( const QModelIndex &current, const QModelIndex &previous);
+    QSqlQueryModel *users_;
+    QSqlQueryModel *mutualAccounts_;
+    QSqlQueryModel *accounts_;
 
 };
 #endif // MAINWINDOW_H
