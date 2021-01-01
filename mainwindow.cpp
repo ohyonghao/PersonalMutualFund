@@ -3,6 +3,8 @@
 #include <QSqlQuery>
 #include <QSqlQueryModel>
 #include <QSqlRecord>
+#include <QSqlField>
+#include <QSqlError>
 
 #include <QMessageBox>
 
@@ -45,8 +47,23 @@ void MainWindow::connectDb(){
     mutualAccounts_ = new QSqlQueryModel;
     mutualAccounts_->setQuery("SELECT name, id FROM mutualfunds");
 
+    // Get default account
+    bool ok{false};
+    int maNumber = mutualAccounts_->record(0).field("id").value().toInt(&ok);
+    if( !ok ){
+        QMessageBox nodb;
+        nodb.setText("Could not find mutual fund");
+        nodb.setStandardButtons(QMessageBox::Ok);
+    }
     accounts_ = new QSqlQueryModel;
-    accounts_->setQuery("SELECT name, id FROM accounts");
+    accounts_->setQuery( QString("SELECT name, id FROM accounts AS a, mutual_accounts AS ma WHERE a.id = ma.account_id AND ma.mutual_id = %1").arg(maNumber));
+
+    if( accounts_->lastError().isValid() ){
+
+        QMessageBox nodb;
+        nodb.setText("Error Getting Data");
+        nodb.setStandardButtons(QMessageBox::Ok);
+    }
 }
 
 void MainWindow::setupUi(){
