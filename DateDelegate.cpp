@@ -16,7 +16,7 @@ QString DateDelegate::displayText(const QVariant &value, const QLocale &locale) 
     return QStyledItemDelegate::displayText(value, locale);
 }
 
-QWidget *DateDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
+QWidget *DateDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/*option*/, const QModelIndex &/*index*/) const{
     auto editor = new QDateEdit( parent );
     editor->setCalendarPopup(true);
     return editor;
