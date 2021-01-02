@@ -10,11 +10,13 @@ CONFIG += c++17
 
 SOURCES += \
     AccountLedgerView.cpp \
+    DateDelegate.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     AccountLedgerView.h \
+    DateDelegate.h \
     mainwindow.h
 
 FORMS += \

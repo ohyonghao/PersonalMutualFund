@@ -1,15 +1,21 @@
 #include <QSettings>
+
 #include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlField>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
 #include <QSqlRecord>
-#include <QSqlField>
-#include <QSqlError>
+
+#include <QSqlRelationalDelegate>
+#include <QStyledItemDelegate>
 
 #include <QMessageBox>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
+#include "DateDelegate.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -64,12 +70,29 @@ void MainWindow::connectDb(){
         nodb.setText("Error Getting Data");
         nodb.setStandardButtons(QMessageBox::Ok);
     }
+
+    ledger_ = new QSqlRelationalTableModel;
+    ledger_->setTable("ledger");
+    ledger_->setRelation(ACCOUNT, QSqlRelation("accounts", "id", "name"));
+    ledger_->setFilter(QString("account_id = %1").arg(1));
+    ledger_->setHeaderData(ID,      Qt::Orientation::Horizontal, "Id");
+    ledger_->setHeaderData(DATE,    Qt::Orientation::Horizontal, "Date");
+    ledger_->setHeaderData(ACCOUNT, Qt::Orientation::Horizontal, "Account");
+    ledger_->setHeaderData(CREDIT,  Qt::Orientation::Horizontal, "Credit");
+    ledger_->setHeaderData(DEBIT,   Qt::Orientation::Horizontal, "Debit");
+    ledger_->setHeaderData(MEMO,    Qt::Orientation::Horizontal, "Memo");
+    ledger_->select();
 }
 
 void MainWindow::setupUi(){
 
     ui->UserView->setModel(users_);
     ui->MutualView->setModel(mutualAccounts_);
-
     ui->AccountsView->setModel(accounts_);
+    ui->LedgerView->setModel(ledger_);
+    ui->LedgerView->setItemDelegateForColumn(ACCOUNT, new QSqlRelationalDelegate(ui->LedgerView) );
+    ui->LedgerView->setItemDelegateForColumn(DATE, new DateDelegate(ui->LedgerView));
+
+    // Setup Ledger
+    ui->LedgerView->setColumnHidden(ID,true);
 }

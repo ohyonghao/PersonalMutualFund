@@ -4,8 +4,7 @@
 #include <QMainWindow>
 #include <QSqlQueryModel>
 #include <QSqlTableModel>
-
-#include <QStringListModel>
+#include <QSqlRelationalTableModel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -28,5 +27,15 @@ private:
     QSqlQueryModel *mutualAccounts_;
     QSqlQueryModel *accounts_;
 
+    QSqlRelationalTableModel *ledger_;
+
+    enum LedgerColumnOrder{
+        ID = 0,
+        DATE = 1,
+        ACCOUNT = 2,
+        CREDIT = 3,
+        DEBIT = 4,
+        MEMO = 5
+    };
 };
 #endif // MAINWINDOW_H
